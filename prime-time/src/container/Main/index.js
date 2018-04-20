@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
+import { withRouter } from "react-router-dom";
 
 import './main.scss';
 import './main.css'
@@ -9,16 +10,51 @@ import INS_LOGO from './assets/instagram.png';
 import InputForm from '../../component/InputForm';
 import Checkbox from '../../component/Checkbox';
 
+import { update, withAuth } from '../../component/App/auth';
+import * as ENDPOINT from '../../API/endpoint';
 
 class Main extends Component {
 
     constructor() {
         super();
         this.state = {
+            username: '',
+            pass: '',
+            isLogin: false
         }
-
     }
+
+    handleLogin = () => {
+        let data = {
+            username: this.state.username,
+            password: this.state.pass
+        };
+
+        fetch(`${ENDPOINT.BASE}${ENDPOINT.LOGIN}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept' : 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).then( response => {
+            return response.json()
+        }) .then(
+            json => {
+                console.log(json);
+                update(json.data);
+                this.setState({isLogin:true});
+                this.props.history.push('/profile');
+            },
+            error => {
+                console.log(error);
+            }
+        )
+    };
     render() {
+        // if (this.state.isLogin === true) {
+        //     return <BrowserRouter path={'/profile'}/>
+        // }
         return (
             <div className={'SignIn'}>
                 <div className={'background'}>
@@ -42,10 +78,10 @@ class Main extends Component {
                                         <div className={'input-section'}>
                                             <InputForm
                                                 handleChange={(event) => {
-                                                    this.setState({email: event.target.value})
+                                                    this.setState({username: event.target.value})
                                                 }}
                                                 placeholder={''}
-                                                value={this.state.email}
+                                                value={this.state.username}
                                                 title={'Account:'}
                                                 type={'text'}
                                                 />
@@ -63,7 +99,7 @@ class Main extends Component {
                                         </div>
 
                                         <div className={'signin-button-section'}>
-                                            <div className={'signin-button'}>
+                                            <div className={'signin-button'} onClick={this.handleLogin}>
                                                 <p>Login</p>
                                             </div>
                                         </div>
@@ -146,9 +182,7 @@ class Main extends Component {
                                                     />
                                                 </div>
                                             </div>
-
                                         </div>
-
                                         <div className={'email-pass-section'}>
                                             <div className={'input-section'}>
                                                 <InputForm
@@ -196,8 +230,6 @@ class Main extends Component {
                                                 <p>Sign up</p>
                                             </div>
                                         </div>
-
-
                                     </div>
                             }
                         </div>
@@ -209,4 +241,4 @@ class Main extends Component {
     }
 }
 
-export default Main;
+export default withRouter(Main);
