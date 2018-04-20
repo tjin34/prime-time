@@ -70,13 +70,13 @@ class User{
                 }
             } else { //密码错误
                 $sid = 'aperror';
-                $error = "密码错误";
+                $error = "Password not match!";
                 $success = false;
                 $data = array();
             }
         } else { //用户名不存在
             $sid = 'aperror';
-            $error = "没有找到用户";
+            $error = "User not found!";
             $success = false;
             $data = array();
         }
@@ -84,22 +84,29 @@ class User{
 
         //输出json
         if(empty($sid)) {
-            $error = "服务器出错";
+            $error = "Server error!";
             $success = false;
             $data = array();
         } else {
             if(!empty($sid) && $sid != 500 && $sid != 'aperror') {
                 $sql = "SELECT * FROM `".DB_PRE."member_profile` WHERE uid = '".$pwcheck[0]['uid']."'";
                 $userInfo = $this->db->fetch_all($sql);
-
-                if(!empty($userinfo)){
+                if(!empty($userInfo)){
                     $error= "";
                     $success = true;
-                    $userInfo[0]['token'] = $token;
-                    $userInfo[0]['sessionId'] = $sid;
-                    $data = $userInfo[0];
+                    $data = array(
+                        'userInfo'=> array(
+                            'username' => $userInfo[0]['username'],
+                            'ins_username' => $userInfo[0]['ins_username'],
+                            'ins_cached_time' => $userInfo[0]['ins_cached_time']
+                        ),
+                        'authenInfo' => array(
+                            'token' => $token,
+                            'sessionId' => $sid
+                        )
+                    );
                 } else {
-                    $error = "获取用户资料失败";
+                    $error = "Failed fetching info!";
                     $success = false;
                     $data = array();
 
@@ -127,35 +134,45 @@ class User{
             if(count($sescheck)=='1'){
                 if ($token == $sescheck[0]['token']) {
                     if (time() >= $sescheck[0]['expiretime']) {
-                        $error= "token已过期";
+                        $error= "token expired!";
                         $success = false;
                         $data = array();
                     } else {
                         $sql = "SELECT * FROM `".DB_PRE."member_profile` WHERE uid = '".$uid."'";
                         $userInfo = $this->db->fetch_all($sql);
 
-                        if(!empty($userinfo)){
+                        if(!empty($userInfo)){
                             $error= "";
                             $success = true;
-                            $data = $userInfo[0];
+                            $data = array(
+                                'userInfo'=> array(
+                                    'username' => $userInfo[0]['username'],
+                                    'ins_username' => $userInfo[0]['ins_username'],
+                                    'ins_cached_time' => $userInfo[0]['ins_cached_time']
+                                ),
+                                'authenInfo' => array(
+                                    'token' => $sescheck[0]['token'],
+                                    'sessionId' => $sescheck[0]['sid']
+                                )
+                            );
                         } else {
-                            $error= "服务器出错";
+                            $error= "Server error!";
                             $success = false;
                             $data = array();
                         }
                     }
                 } else {
-                    $error= "验证失败";
+                    $error= "Authentication failed";
                     $success = false;
                     $data = array();
                 }
             }else{
-                $error= "Sessionid错误";
+                $error= "Sessionid error!";
                 $success = false;
                 $data = array();
             }
         }else {
-            $error= "参数至少一个为空";
+            $error= "Parameters empty!";
             $success = false;
             $data = array();
         }

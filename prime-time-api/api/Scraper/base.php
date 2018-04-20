@@ -28,8 +28,9 @@ class Base {
      * Initialize InstagramScraper Base Account
      * @param $username
      * @param $password
+     * @param $total
      */
-    function initInstagram($username, $password) {
+    function initInstagram($username, $password, $total) {
         $password = $username ? $password : BASEPW;
         $username = $username ? $username : BASEACC;
         $this->INS = \InstagramScraper\Instagram::withCredentials($username, $password, '');
@@ -46,7 +47,7 @@ class Base {
             $this->handleException($exception);
         }
 
-        $this->getPosts($this->ACCOUNT);
+        $this->getPosts($this->ACCOUNT, $total);
     }
 
 
@@ -97,13 +98,14 @@ class Base {
     /**
      * Get User's Last 20 Media Lists
      * @param \InstagramScraper\Model\Account $account
+     * @param $total
      */
-    function getPosts(\InstagramScraper\Model\Account $account) {
+    function getPosts(\InstagramScraper\Model\Account $account, $total) {
         $insUsername = $account->getUsername();
-        $userId = $this->DB->fetch_all("SELECT uid FROM `".DB_PRE."member_profile` WHERE ins_username = '$insUsername'");
+        $userId = $this->DB->fetch_all("SELECT uid FROM ".DB_PRE."member_profile WHERE ins_username ='$insUsername'");
         $userId = !$userId[0]['uid'] ? 0 : $userId[0]['uid'];
         try {
-            $medias = $this->INS->getMedias($account->getUsername(), 20);
+            $medias = $this->INS->getMedias($account->getUsername(), $total);
             foreach ($medias as $media) {
                 $result = array(
                     "Id" => $media->getId(),
@@ -121,9 +123,10 @@ class Base {
                 /* Save the media into DB */
                 $this->savePostIntoDB($result, $account->getFollowedByCount(), !$userId  ? 0 : $userId);
             }
+            $this->DB->query("UPDATE ".DB_PRE."member_profile SET ins_cached_time = ".time()." WHERE uid = $userId");
         } catch (\InstagramScraper\Exception\InstagramException $exception) {
             $this->handleException($exception);
-            $this->getPosts($account);
+            $this->getPosts($account, $total);
         }
     }
 
@@ -152,9 +155,11 @@ class Base {
 
         /* Check if the query was successful */
         if (!$query) return false;
-        echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;------ Inserted media with ID -- [ ".$id." ] <br>";
+//        echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;------ Inserted media with ID -- [ ".$id." ] <br>";
         /* If userId is provided, then store the relation into user_media table */
-        if ($userId) $this->DB->query("INSERT INTO `".DB_PRE."user_media` (uid, mid) VALUES($userId, $id )");
+        if ($userId) {
+            $this->DB->query("INSERT INTO `".DB_PRE."user_media` (uid, mid, created) VALUES($userId, $id, $created)");
+        }
 
         return true; 
     }

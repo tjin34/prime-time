@@ -51,13 +51,13 @@ class DB{
 		return $query;
 	}
 
-	function fetch_array($query, $result_type = MYSQL_ASSOC) {
+	function fetch_array($query, $result_type = 1) {
 		switch(DBTYPE){
 			case 'mysql':
 				return mysql_fetch_array($query, $result_type);
 				break;
 			case 'mysqli':
-				return mysqli_fetch_array($query, $result_type);
+				return mysqli_fetch_array($query,1);
 			    break;
 		}
 	}
