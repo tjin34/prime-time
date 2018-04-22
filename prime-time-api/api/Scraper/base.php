@@ -123,7 +123,7 @@ class Base {
                 /* Save the media into DB */
                 $this->savePostIntoDB($result, $account->getFollowedByCount(), !$userId  ? 0 : $userId);
             }
-            $this->DB->query("UPDATE ".DB_PRE."member_profile SET ins_cached_time = ".time()." WHERE uid = $userId");
+            $this->DB->query("UPDATE ".DB_PRE."member_profile SET ins_cached_time = ".time().", avatar = ".$account->getProfilePicUrl()." WHERE uid = $userId");
         } catch (\InstagramScraper\Exception\InstagramException $exception) {
             $this->handleException($exception);
             $this->getPosts($account, $total);
