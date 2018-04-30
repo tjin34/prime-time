@@ -38,9 +38,7 @@
 require_once dirname(__FILE__).'/'.'../Class/Media.php';
 $Media = new Media();
 
-$uid = $_GET['uid'];
-//$token = $_GET['token'];
-$offset = $_GET['offset'];
-$pageSize = $_GET['pageSize'];
+$username = $_GET['username'];
+$password = $_GET['password'];
 
-$Media->fetchMedia($uid,$offset,$pageSize);
+$Media->fetchMedia($username, $password,0,20);

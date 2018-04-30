@@ -25,16 +25,17 @@ class Media {
 
     /**
      * Fetch media info for user
-     * @param $uid
+     * @param $username
+     * @param $password
      * @param $start
      * @param $pageSize
      */
-    function fetchMedia($uid, $start, $pageSize) {
-        $cacheCheck = $this->db->fetch_all("SELECT * FROM ".DB_PRE."member_profile WHERE uid = $uid");
+    function fetchMedia($username, $password, $start, $pageSize) {
+        $cacheCheck = $this->db->fetch_all("SELECT * FROM ".DB_PRE."member_profile WHERE ins_username = $username");
         $cachedTime = $cacheCheck[0]['ins_cached_time'];
 
         if ($this->utils->checkIfToday($cachedTime)) {
-            $medias = $this->db->fetch_all("SELECT * FROM ".DB_PRE."user_media WHERE uid = $uid ORDER BY created DESC LIMIT $start, $pageSize");
+            $medias = $this->db->fetch_all("SELECT * FROM ".DB_PRE."user_media WHERE uid = ".$cacheCheck['uid']." ORDER BY created DESC LIMIT $start, $pageSize");
             $data = array();
             foreach ($medias as $key => $media) {
                 $tableName = $this->utils->formTableName($media['mid']);
@@ -48,8 +49,8 @@ class Media {
             ),JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         } else {
-            $this->base->initInstagram($cacheCheck[0]['ins_username'], $cacheCheck[0]['ins_password'], $start+$pageSize);
-            $this->fetchMedia($uid, $start, $pageSize);
+            $this->base->initInstagram($username, $password, $start+$pageSize);
+//            $this->fetchMedia($uid, $start, $pageSize);
         }
     }
 
