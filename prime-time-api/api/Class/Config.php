@@ -1,5 +1,9 @@
 <?php
 
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: '.'Origin, X-Requested-With, Content-Type, Accept');
+
+
 // MySQL Database settings
 
 // Database Endpoint
@@ -23,5 +27,5 @@ $db_pre = 'prime_time_';
 $baseAccount = "jzy_tony";
 $basePassword = "JzyMucun1996";
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+//error_reporting(E_ALL);
+//ini_set('display_errors', 1);

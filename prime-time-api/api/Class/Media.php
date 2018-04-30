@@ -40,7 +40,7 @@ class Media {
             foreach ($medias as $key => $media) {
                 $tableName = $this->utils->formTableName($media['mid']);
                 $insMedia = $this->db->fetch_all("SELECT * FROM $tableName WHERE id = '".$media['mid']."'");
-                $data[] = $insMedia;
+                $data[] = $insMedia[0];
             }
             echo json_encode(array(
                 'error' => '',

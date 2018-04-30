@@ -11,7 +11,7 @@ import InputForm from '../../component/InputForm';
 import Checkbox from '../../component/Checkbox';
 
 import { update, withAuth } from '../../component/App/auth';
-import * as ENDPOINT from '../../API/endpoint';
+import * as ENDPOINT from '../../endpoint';
 
 class Main extends Component {
 

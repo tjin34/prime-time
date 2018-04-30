@@ -11,7 +11,7 @@ import styled from 'styled-components'
 
 import './Profile.scss';
 import './Slide.css'
-import * as ENDPOINT from "../../API/endpoint";
+import * as ENDPOINT from "../../endpoint";
 
 const StyledProfileCard = styled.div`
   position: absolute;

@@ -96,6 +96,7 @@ class User{
                     $success = true;
                     $data = array(
                         'userInfo'=> array(
+                            'uid' => $userInfo[0]['uid'],
                             'username' => $userInfo[0]['username'],
                             'ins_username' => $userInfo[0]['ins_username'],
                             'ins_cached_time' => $userInfo[0]['ins_cached_time']
@@ -146,6 +147,7 @@ class User{
                             $success = true;
                             $data = array(
                                 'userInfo'=> array(
+                                    'uid' => $userInfo[0]['uid'],
                                     'username' => $userInfo[0]['username'],
                                     'ins_username' => $userInfo[0]['ins_username'],
                                     'ins_cached_time' => $userInfo[0]['ins_cached_time']
