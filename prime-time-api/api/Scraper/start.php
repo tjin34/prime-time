@@ -7,7 +7,7 @@
 require_once dirname(__FILE__).'/'.'base.php';
 
 $username = $_GET['username'];
-$password = $_GET['password'];
+//$password = $_GET['password'];
 $depth = $_GET['depth'];
 
 /* Heads up that is fetching User posts */
@@ -16,7 +16,7 @@ $depth = $_GET['depth'];
 //ob_flush();
 
 $base = new Base();
-$base->getPosts($username, $password, 20);
+$base->getPosts($username, '', 20);
 //$base->getPosts($base->ACCOUNT);
 //echo "<br />\n";
 //echo '</div>';

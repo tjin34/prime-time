@@ -77,8 +77,15 @@ class Medias {
                 curl_close($ch);
 
                 /* If output is true, recursively call fetchMedia, and run the first layer */
-                if ($output) {
+                if (!$output) {
                     $this->fetchMedia($username, $password, $start, $pageSize);
+                } else {
+                    /* Return JSON output */
+                    echo json_encode(array(
+                        'error' => $output,
+                        'success' => false,
+                        'data' => array()
+                    ),JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
                 }
             }
         } else {  /* If User was not cached at first */
@@ -89,6 +96,13 @@ class Medias {
             /* If query passed, recursively call fetchMedia, and run the second layer */
             if ($query) {
                 $this->fetchMedia($username, $password, $start, $pageSize);
+            } else {
+                /* Return JSON output */
+                echo json_encode(array(
+                    'error' => 'MySQL ERROR',
+                    'success' => false,
+                    'data' => array()
+                ),JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
             }
 
 

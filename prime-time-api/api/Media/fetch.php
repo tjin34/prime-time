@@ -39,6 +39,5 @@ require_once dirname(__FILE__).'/'.'../Class/Medias.php';
 $Media = new Medias();
 
 $username = $_GET['username'];
-$password = $_GET['password'];
 
-$Media->fetchMedia($username, $password,0,20);
+$Media->fetchMedia($username, '',0,20);

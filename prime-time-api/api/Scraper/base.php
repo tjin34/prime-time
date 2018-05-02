@@ -22,6 +22,13 @@ class Base {
         $this->TIME = time();
         $this->UTIL = new Utils();
         $this->TIMEOUT = 100;
+        try {
+            $this->INS = \InstagramScraper\Instagram::withCredentials(BASEACC, BASEPW, '');
+            $this->INS->login();
+
+        } catch (Exception $exception) {
+            $this->handleException($exception);
+        }
     }
 
     /**
@@ -107,16 +114,18 @@ class Base {
         $password = $username ? $password : BASEPW;
         $username = $username ? $username : BASEACC;
 
-        try {
-            $this->INS = \InstagramScraper\Instagram::withCredentials($username, $password, '');
-            $this->INS->login();
-            $this->ACCOUNT = $this->INS->getAccount($username);
+//        try {
+//            $this->INS = \InstagramScraper\Instagram::withCredentials($username, $password, '');
+//            $this->INS->login();
+//            $this->ACCOUNT = $this->INS->getAccount($username);
+//
+//        } catch (Exception $exception) {
+//            $this->handleException($exception);
+//        }
 
-        } catch (Exception $exception) {
-            $this->handleException($exception);
-        }
+        $this->ACCOUNT = $this->INS->getAccount($username);
 
-        $insUsername = $this->ACCOUNT->getUsername();
+        $insUsername = $username;
         $userId = $this->DB->fetch_all("SELECT uid FROM ".DB_PRE."member_profile WHERE ins_username ='$insUsername'");
         $userId = !$userId[0]['uid'] ? 0 : $userId[0]['uid'];
 
@@ -147,16 +156,16 @@ class Base {
 
         } catch (\InstagramScraper\Exception\InstagramException $exception) {
             $this->handleException($exception);
-            echo false;
+            echo 'AccountIsPrivate';
             return false;
         } catch (\InstagramScraper\Exception\InstagramNotFoundException $exception) {
 
             $this->handleException($exception);
-            echo false;
+            echo 'InstagramNotFound';
             return false;
         }
 
-        echo true;
+        echo '';
         return true;
     }
 
