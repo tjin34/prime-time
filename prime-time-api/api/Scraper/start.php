@@ -16,7 +16,7 @@ $depth = $_GET['depth'];
 //ob_flush();
 
 $base = new Base();
-$base->initInstagram($username, $password, 20);
+$base->getPosts($username, $password, 20);
 //$base->getPosts($base->ACCOUNT);
 //echo "<br />\n";
 //echo '</div>';
@@ -77,9 +77,3 @@ if ($depth > 1) {
 //echo '</div>';
 
 //ob_end_flush();
-
-echo json_encode(
-    array(
-    "success" => true,
-    "error" => ""),
-    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);

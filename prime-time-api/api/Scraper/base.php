@@ -33,21 +33,22 @@ class Base {
     function initInstagram($username, $password, $total) {
         $password = $username ? $password : BASEPW;
         $username = $username ? $username : BASEACC;
-        $this->INS = \InstagramScraper\Instagram::withCredentials($username, $password, '');
 
         try {
+            $this->INS = \InstagramScraper\Instagram::withCredentials($username, $password, '');
             $this->INS->login();
+            $this->ACCOUNT = $this->INS->getAccount($username);
+
         } catch (Exception $exception) {
             $this->handleException($exception);
         }
         // $this->INS = new \InstagramScraper\Instagram();
-        try {
-            $this->ACCOUNT = $this->INS->getAccount($username);
-        } catch (Exception $exception) {
-            $this->handleException($exception);
-        }
+//        try {
+//        } catch (Exception $exception) {
+//            $this->handleException($exception);
+//        }
 
-        $this->getPosts($this->ACCOUNT, $total);
+//        $this->getPosts($this->ACCOUNT, $total);
     }
 
 
@@ -97,15 +98,31 @@ class Base {
 
     /**
      * Get User's Last 20 Media Lists
-     * @param \InstagramScraper\Model\Account $account
+     * @param $username
+     * @param $password
      * @param $total
+     * @return bool
      */
-    function getPosts(\InstagramScraper\Model\Account $account, $total) {
-        $insUsername = $account->getUsername();
+    function getPosts($username, $password, $total) {
+        $password = $username ? $password : BASEPW;
+        $username = $username ? $username : BASEACC;
+
+        try {
+            $this->INS = \InstagramScraper\Instagram::withCredentials($username, $password, '');
+            $this->INS->login();
+            $this->ACCOUNT = $this->INS->getAccount($username);
+
+        } catch (Exception $exception) {
+            $this->handleException($exception);
+        }
+
+        $insUsername = $this->ACCOUNT->getUsername();
         $userId = $this->DB->fetch_all("SELECT uid FROM ".DB_PRE."member_profile WHERE ins_username ='$insUsername'");
         $userId = !$userId[0]['uid'] ? 0 : $userId[0]['uid'];
+
+
         try {
-            $medias = $this->INS->getMedias($account->getUsername(), $total);
+            $medias = $this->INS->getMedias($insUsername, $total);
             foreach ($medias as $media) {
                 $result = array(
                     "Id" => $media->getId(),
@@ -121,13 +138,26 @@ class Base {
                     "Timestamp" => $media->getCreatedTime()
                 );
                 /* Save the media into DB */
-                $this->savePostIntoDB($result, $account->getFollowedByCount(), !$userId  ? 0 : $userId);
+                $this->savePostIntoDB($result, $this->ACCOUNT->getFollowedByCount(), !$userId  ? 0 : $userId);
             }
-            $this->DB->query("UPDATE ".DB_PRE."member_profile SET ins_cached_time = ".time().", avatar = ".$account->getProfilePicUrl()." WHERE uid = $userId");
+            $time = time();
+            $avatar = $this->ACCOUNT->getProfilePicUrl();
+            $this->DB->query("UPDATE `".DB_PRE."member_profile` SET ins_cached_time = '$time', avatar = '$avatar' WHERE uid = '$userId'");
+
+
         } catch (\InstagramScraper\Exception\InstagramException $exception) {
             $this->handleException($exception);
-            $this->getPosts($account, $total);
+            echo false;
+            return false;
+        } catch (\InstagramScraper\Exception\InstagramNotFoundException $exception) {
+
+            $this->handleException($exception);
+            echo false;
+            return false;
         }
+
+        echo true;
+        return true;
     }
 
     /**

@@ -36,13 +36,12 @@ $postArray = json_decode($postJson, true);
 /* Get request body json values */
 $username = $postArray['username'];
 $password = $postArray['password'];
-$email = $postArray['email'];
 
 
 /* make sure no empty value in the json body */
-if (!empty($username) && !empty($password) && !empty($email)) {
+if (!empty($username) && !empty($password)) {
 
-	$result = $User->register($username, $password, $email);
+	$result = $User->register($username, $password,"");
 	$success = false;
 	switch ($result) {
         case -3:

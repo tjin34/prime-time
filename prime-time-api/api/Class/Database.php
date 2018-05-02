@@ -63,6 +63,7 @@ class DB{
 	}
 
 	function fetch_all($sql) {
+	     $arr = array();
 	     $query = $this->query($sql);
 		while($data = $this->fetch_array($query)) {
 			$arr[] = $data;
